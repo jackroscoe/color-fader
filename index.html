@@ -8,6 +8,7 @@
             text-align: center;
             padding-top: 60px;
             font-family: Arial, Helvetica, sans-serif;
+            text-shadow: 1px 1px 0 #000;
         }
         #hex {
             color: white;
@@ -43,6 +44,7 @@
 
             /* */
             valueMap = new Array();
+            valueMap[0] = 0;
             valueMap[1] = 1;
             valueMap[2] = 2;
             valueMap[3] = 3;
@@ -64,7 +66,7 @@
             currentWidthPercentage = viewportWidth / maxViewportWidth * 100;
 
             /* Then we want to use that percentage to extract our number from maxValue */
-            currentValue = maxValue / currentWidthPercentage;
+            currentValue = maxValue / 100 * currentWidthPercentage;
             /* Round it to a whole number */
             currentValue = Math.round(currentValue);
 
@@ -73,6 +75,7 @@
              */
             /* 1. Find the length of the number */
             currentValueLength = currentValue.toString().length;
+
             /* 2. Loop through and grab each pair */
             for (i = 0; i < currentValueLength; i++) {
                 /* If the number is even, grab it and along with the following digit */
@@ -125,11 +128,12 @@
                 hexPercentage = 16 / 100 * currentValuePairs[i];
                 hexValues.push(valueMap[Math.round(hexPercentage)]);
             }
-
+            console.log(hexValues);
             color = '#';
-            for(i = 1; i <= 6; i++) {
+            for(i = 0; i < 6; i++) {
                 color += hexValues[i];
             }
+            console.log(color);
 
             $("body").css("background-color", color );
 
