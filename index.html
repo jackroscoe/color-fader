@@ -25,124 +25,129 @@
     <h1>resize your browser</h1>
     <script>
 
-        function refreshColor() {
+        $(document).ready(function() {
 
-            var viewportWidth = $(window).width(),   // The current viewport width.
-                maxViewportWidth = 2560,             // The maximum browser width we're going to calculate for. Width in px of a 27" iMac.
-                currentWidthPercentage,              // Our current width in percentage form relative to the maxViewportWidth
-                maxValue = 161616161616,             // Each part of the hex code has a maximum of 16 options
-                currentValue,
-                currentValueLength,
-                i,
-                currentValueAsString,
-                currentValuePairs = new Array(),
-                hexValues = new Array(),
-                startPoint,
-                valueMap = [],                      // The possible values of each character in the hex code
-                hexPercentage,
-                color;                              // Our final color
+            'use strict';
+            function refreshColor() {
 
-            /* */
-            valueMap = new Array();
-            valueMap[0] = 0;
-            valueMap[1] = 1;
-            valueMap[2] = 2;
-            valueMap[3] = 3;
-            valueMap[4] = 4;
-            valueMap[5] = 5;
-            valueMap[6] = 6;
-            valueMap[7] = 7;
-            valueMap[8] = 8;
-            valueMap[9] = 9;
-            valueMap[10] = 'a';
-            valueMap[11] = 'b';
-            valueMap[12] = 'c';
-            valueMap[13] = 'd';
-            valueMap[14] = 'e';
-            valueMap[15] = 'f';
-            valueMap[16] = 'g';
+                var viewportWidth = $(window).width(),   // The current viewport width.
+                    maxViewportWidth = 2560,             // The maximum browser width we're going to calculate for. Width in px of a 27" iMac.
+                    currentWidthPercentage,              // Our current width in percentage form relative to the maxViewportWidth
+                    maxValue = 161616161616,             // Each part of the hex code has a maximum of 16 options
+                    currentValue,
+                    currentValueLength,
+                    i,
+                    currentValueAsString,
+                    currentValuePairs = new Array(),
+                    hexValues = new Array(),
+                    startPoint,
+                    valueMap = [],                      // The possible values of each character in the hex code
+                    hexPercentage,
+                    color;                              // Our final color
 
-            /* First, we need to calculate what percentage our current browser width is at, relative to maxViewportWidth */
-            currentWidthPercentage = viewportWidth / maxViewportWidth * 100;
+                /* */
+                valueMap = new Array();
+                valueMap[0] = 0;
+                valueMap[1] = 1;
+                valueMap[2] = 2;
+                valueMap[3] = 3;
+                valueMap[4] = 4;
+                valueMap[5] = 5;
+                valueMap[6] = 6;
+                valueMap[7] = 7;
+                valueMap[8] = 8;
+                valueMap[9] = 9;
+                valueMap[10] = 'a';
+                valueMap[11] = 'b';
+                valueMap[12] = 'c';
+                valueMap[13] = 'd';
+                valueMap[14] = 'e';
+                valueMap[15] = 'f';
+                valueMap[16] = 'g';
 
-            /* Then we want to use that percentage to extract our number from maxValue */
-            currentValue = maxValue / 100 * currentWidthPercentage;
-            /* Round it to a whole number */
-            currentValue = Math.round(currentValue);
+                /* First, we need to calculate what percentage our current browser width is at, relative to maxViewportWidth */
+                currentWidthPercentage = viewportWidth / maxViewportWidth * 100;
 
-            /**
-             * Now we want to seperate current value into individual values, paring numbers into groups of two
-             */
-            /* 1. Find the length of the number */
-            currentValueLength = currentValue.toString().length;
+                /* Then we want to use that percentage to extract our number from maxValue */
+                currentValue = maxValue / 100 * currentWidthPercentage;
+                /* Round it to a whole number */
+                currentValue = Math.round(currentValue);
 
-            /* 2. Loop through and grab each pair */
-            for (i = 0; i < currentValueLength; i++) {
-                /* If the number is even, grab it and along with the following digit */
-                currentValueAsString = currentValue.toString();
-                if(i % 2 == 0) {
-                    currentValuePairs.push(currentValueAsString.substr(i, 2));
+                /**
+                 * Now we want to seperate current value into individual values, paring numbers into groups of two
+                 */
+                /* 1. Find the length of the number */
+                currentValueLength = currentValue.toString().length;
+
+                /* 2. Loop through and grab each pair */
+                for (i = 0; i < currentValueLength; i++) {
+                    /* If the number is even, grab it and along with the following digit */
+                    currentValueAsString = currentValue.toString();
+                    if(i % 2 == 0) {
+                        currentValuePairs.push(currentValueAsString.substr(i, 2));
+                    }
                 }
+
+                /* We need to know how many values we have, in case any part of the hex needs to be 0 */
+                switch(currentValuePairs.length) {
+                    case 1:
+                        hexValues[1] = '0';
+                        hexValues[2] = '0';
+                        hexValues[3] = '0';
+                        hexValues[4] = '0';
+                        hexValues[5] = '0';
+                        startPoint = 6;
+                        break;
+                    case 2:
+                        hexValues[1] = '0';
+                        hexValues[2] = '0';
+                        hexValues[3] = '0';
+                        hexValues[4] = '0';
+                        startPoint = 5;
+                        break;
+                    case 3:
+                        hexValues[1] = '0';
+                        hexValues[2] = '0';
+                        hexValues[3] = '0';
+                        startPoint = 4;
+                        break;
+                    case 4:
+                        hexValues[1] = '0';
+                        hexValues[2] = '0';
+                        startPoint = 3;
+                        break;
+                    case 5:
+                        hexValues[1] = '0';
+                        startPoint = 2;
+                        break;
+                    case 6:
+                        startPoint = 1;
+                        break;
+                }
+
+                /* Now use each of the values we do have to build the rest of the hex code */
+                for(i = 0; i < currentValuePairs.length; i++) {
+                    /* As each value has a cap of 16 (0 - 9 & a - f), we need to calculate that */
+                    hexPercentage = 16 / 100 * currentValuePairs[i];
+                    hexValues.push(valueMap[Math.round(hexPercentage)]);
+                }
+
+                color = '#';
+                for(i = 0; i < 6; i++) {
+                    color += hexValues[i];
+                }
+
+                $("body").css("background-color", color );
+
             }
 
-            /* We need to know how many values we have, in case any part of the hex needs to be 0 */
-            switch(currentValuePairs.length) {
-                case 1:
-                    hexValues[1] = '0';
-                    hexValues[2] = '0';
-                    hexValues[3] = '0';
-                    hexValues[4] = '0';
-                    hexValues[5] = '0';
-                    startPoint = 6;
-                    break;
-                case 2:
-                    hexValues[1] = '0';
-                    hexValues[2] = '0';
-                    hexValues[3] = '0';
-                    hexValues[4] = '0';
-                    startPoint = 5;
-                    break;
-                case 3:
-                    hexValues[1] = '0';
-                    hexValues[2] = '0';
-                    hexValues[3] = '0';
-                    startPoint = 4;
-                    break;
-                case 4:
-                    hexValues[1] = '0';
-                    hexValues[2] = '0';
-                    startPoint = 3;
-                    break;
-                case 5:
-                    hexValues[1] = '0';
-                    startPoint = 2;
-                    break;
-                case 6:
-                    startPoint = 1;
-                    break;
-            }
+            $(window).resize(function() {
+                refreshColor();
+            });
 
-            /* Now use each of the values we do have to build the rest of the hex code */
-            for(i = 0; i < currentValuePairs.length; i++) {
-                /* As each value has a cap of 16 (0 - 9 & a - f), we need to calculate that */
-                hexPercentage = 16 / 100 * currentValuePairs[i];
-                hexValues.push(valueMap[Math.round(hexPercentage)]);
-            }
-            console.log(hexValues);
-            color = '#';
-            for(i = 0; i < 6; i++) {
-                color += hexValues[i];
-            }
-            console.log(color);
-
-            $("body").css("background-color", color );
-
-        }
-
-        $(window).resize(function() {
             refreshColor();
+
         });
-        refreshColor();
 
     </script>
 </body>
